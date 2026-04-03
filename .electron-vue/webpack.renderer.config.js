@@ -12,6 +12,7 @@ const SpritePlugin = require('svg-sprite-loader/plugin')
 const postcssPresetEnv = require('postcss-preset-env')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const ESLintPlugin = require('eslint-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 const { getRendererEnvironmentDefinitions } = require('./marktextEnvironment')
 const { dependencies } = require('../package.json')
@@ -253,6 +254,19 @@ if (isProduction) {
   rendererConfig.devtool = 'nosources-source-map'
   rendererConfig.mode = 'production'
   rendererConfig.optimization.minimize = true
+  rendererConfig.optimization.minimizer = [
+    new TerserPlugin({
+      terserOptions: {
+        ecma: 2020,
+        compress: {
+          passes: 2
+        },
+        output: {
+          ecma: 2020
+        }
+      }
+    })
+  ]
 
   rendererConfig.plugins.push(
     new webpack.DefinePlugin({

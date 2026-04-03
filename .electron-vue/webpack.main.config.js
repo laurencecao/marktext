@@ -5,6 +5,7 @@ process.env.BABEL_ENV = 'main'
 const path = require('path')
 const webpack = require('webpack')
 const ESLintPlugin = require('eslint-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 const { getEnvironmentDefinitions } = require('./marktextEnvironment')
 const { dependencies } = require('../package.json')
@@ -107,6 +108,19 @@ if (isProduction) {
   mainConfig.devtool = 'nosources-source-map'
   mainConfig.mode = 'production'
   mainConfig.optimization.minimize = true
+  mainConfig.optimization.minimizer = [
+    new TerserPlugin({
+      terserOptions: {
+        ecma: 2020,
+        compress: {
+          passes: 2
+        },
+        output: {
+          ecma: 2020
+        }
+      }
+    })
+  ]
 }
 
 module.exports = mainConfig
