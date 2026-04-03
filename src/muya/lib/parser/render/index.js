@@ -98,10 +98,14 @@ class StateRender {
   async renderMermaid () {
     if (this.mermaidCache.size) {
       const mermaid = await loadRenderer('mermaid')
-      mermaid.initialize({
+      // Use mermaidConfig if available, otherwise fall back to legacy mermaidTheme
+      const mermaidConfig = this.muya.options.mermaidConfig || {}
+      const config = {
         securityLevel: 'strict',
-        theme: this.muya.options.mermaidTheme
-      })
+        theme: this.muya.options.mermaidTheme,
+        ...mermaidConfig
+      }
+      mermaid.initialize(config)
       for (const [key, value] of this.mermaidCache.entries()) {
         const { code } = value
         const target = document.querySelector(key)

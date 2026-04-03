@@ -43,18 +43,15 @@ class ExportHtml {
       preEle.replaceWith(mermaidContainer)
     }
     const mermaid = await loadRenderer('mermaid')
-    // We only export light theme, so set mermaid theme to `default`, in the future, we can choose whick theme to export.
-    mermaid.initialize({
+    // Use mermaidConfig if available, otherwise fall back to legacy mermaidTheme
+    const mermaidConfig = this.muya?.options?.mermaidConfig || {}
+    const config = {
       securityLevel: 'strict',
-      theme: 'default'
-    })
-    mermaid.init(undefined, this.exportContainer.querySelectorAll('div.mermaid'))
-    if (this.muya) {
-      mermaid.initialize({
-        securityLevel: 'strict',
-        theme: this.muya.options.mermaidTheme
-      })
+      theme: this.muya?.options?.mermaidTheme || 'default',
+      ...mermaidConfig
     }
+    mermaid.initialize(config)
+    mermaid.init(undefined, this.exportContainer.querySelectorAll('div.mermaid'))
   }
 
   async renderDiagram () {

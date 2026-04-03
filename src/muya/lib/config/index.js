@@ -268,6 +268,30 @@ export const MUYA_DEFAULT_OPTION = Object.freeze({
   frontmatterType: '-',
   sequenceTheme: 'hand', // hand or simple
   mermaidTheme: 'default', // dark / forest / default
+  mermaidConfig: {
+    // Additional mermaid configuration options (inspired by cherry-markdown)
+    theme: 'default', // default, dark, forest, neutral
+    fontFamily: 'sans-serif',
+    altFontFamily: 'sans-serif',
+    startOnLoad: false,
+    logLevel: 5, // 1-5
+    securityLevel: 'strict',
+    // Chart-specific options
+    flowchart: { useMaxWidth: false },
+    sequence: { useMaxWidth: false },
+    gantt: { useMaxWidth: false },
+    journey: { useMaxWidth: false },
+    timeline: { useMaxWidth: false },
+    class: { useMaxWidth: false },
+    state: { useMaxWidth: false },
+    er: { useMaxWidth: false },
+    pie: { useMaxWidth: false },
+    quadrantChart: { useMaxWidth: false },
+    xyChart: { useMaxWidth: false },
+    mindmap: { useMaxWidth: false },
+    kanban: { useMaxWidth: false },
+    gitGraph: { useMaxWidth: false }
+  },
   vegaTheme: 'latimes', // excel / ggplot2 / quartz / vox / fivethirtyeight / dark / latimes
   hideQuickInsertHint: false,
   hideLinkPopup: false,
