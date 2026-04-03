@@ -111,7 +111,7 @@ class StateRender {
         try {
           mermaid.parse(code)
           target.innerHTML = sanitize(code, PREVIEW_DOMPURIFY_CONFIG, true)
-          mermaid.init(undefined, target)
+          mermaid.run({ nodes: [target] })
         } catch (err) {
           target.innerHTML = '< Invalid Mermaid Codes >'
           target.classList.add(CLASS_OR_ID.AG_MATH_ERROR)
