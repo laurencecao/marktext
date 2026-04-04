@@ -110,7 +110,7 @@ class StateRender {
         }
         try {
           mermaid.parse(code)
-          target.innerHTML = sanitize(code, PREVIEW_DOMPURIFY_CONFIG, true)
+          target.textContent = code
           target.classList.add('mermaid')
           await mermaid.run({ nodes: [target] })
         } catch (err) {

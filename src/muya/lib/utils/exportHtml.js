@@ -38,7 +38,7 @@ class ExportHtml {
     for (const code of codes) {
       const preEle = code.parentNode
       const mermaidContainer = document.createElement('div')
-      mermaidContainer.innerHTML = sanitize(unescapeHTML(code.innerHTML), EXPORT_DOMPURIFY_CONFIG, true)
+      mermaidContainer.textContent = unescapeHTML(code.innerHTML)
       mermaidContainer.classList.add('mermaid')
       preEle.replaceWith(mermaidContainer)
     }
