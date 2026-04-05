@@ -73,6 +73,28 @@ const pasteCtrl = ContentState => {
       }
     }
 
+    // Extract LaTeX from KaTeX <annotation> before DOMPurify strips MathML (mathMl: false).
+    if (/<annotation[^>]*application\/x-tex/.test(rawHtml)) {
+      const tempDiv = document.createElement('div')
+      tempDiv.innerHTML = rawHtml
+      const annotations = tempDiv.querySelectorAll('annotation[encoding="application/x-tex"]')
+      for (const annotation of annotations) {
+        const latexSource = annotation.textContent
+        if (!latexSource) continue
+
+        const mathEl = annotation.closest('math')
+        const isDisplayMode = mathEl && mathEl.getAttribute('display') === 'block'
+        const katexEl = annotation.closest('.katex')
+        if (katexEl) {
+          const replacement = isDisplayMode
+            ? document.createTextNode(`\\[${latexSource}\\]`)
+            : document.createTextNode(`$${latexSource}$`)
+          katexEl.replaceWith(replacement)
+        }
+      }
+      rawHtml = tempDiv.innerHTML
+    }
+
     // Prevent XSS and sanitize HTML.
     const sanitizedHtml = sanitize(rawHtml, PREVIEW_DOMPURIFY_CONFIG, false)
     const tempWrapper = document.createElement('div')
