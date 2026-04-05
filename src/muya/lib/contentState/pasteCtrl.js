@@ -73,7 +73,10 @@ const pasteCtrl = ContentState => {
       }
     }
 
+    const mathPlaceholders = []
+
     // Extract LaTeX from KaTeX <annotation> before DOMPurify strips MathML (mathMl: false).
+    // Use placeholders to prevent Turndown from mangling \[...\] (link syntax) and \\ (escape).
     if (/<annotation[^>]*application\/x-tex/.test(rawHtml)) {
       const tempDiv = document.createElement('div')
       tempDiv.innerHTML = rawHtml
@@ -86,10 +89,11 @@ const pasteCtrl = ContentState => {
         const isDisplayMode = mathEl && mathEl.getAttribute('display') === 'block'
         const katexEl = annotation.closest('.katex')
         if (katexEl) {
-          const replacement = isDisplayMode
-            ? document.createTextNode(`\\[${latexSource}\\]`)
-            : document.createTextNode(`$${latexSource}$`)
-          katexEl.replaceWith(replacement)
+          const idx = mathPlaceholders.length
+          const delimiter = isDisplayMode ? '\\[' : '$'
+          const endDelimiter = isDisplayMode ? '\\]' : '$'
+          mathPlaceholders.push({ latexSource, delimiter, endDelimiter })
+          katexEl.replaceWith(document.createTextNode(`__MARKTEXT_MATH_${idx}__`))
         }
       }
       rawHtml = tempDiv.innerHTML
@@ -143,6 +147,7 @@ const pasteCtrl = ContentState => {
         }
       }
     }
+    this._mathPlaceholders = mathPlaceholders.length > 0 ? mathPlaceholders : null
     return tempWrapper.innerHTML
   }
 

@@ -443,7 +443,20 @@ const importRegister = ContentState => {
   // turn html to blocks
   ContentState.prototype.html2State = function (html) {
     const markdown = this.htmlToMarkdown(html, ['ruby', 'rt', 'u', 'br'])
-    return this.markdownToState(markdown)
+
+    // Restore math placeholders that were inserted by standardizeHTML to prevent
+    // Turndown from mangling \[...\] and \\ in LaTeX source.
+    let finalMarkdown = markdown
+    if (this._mathPlaceholders && this._mathPlaceholders.length > 0) {
+      for (let i = 0; i < this._mathPlaceholders.length; i++) {
+        const { latexSource, delimiter, endDelimiter } = this._mathPlaceholders[i]
+        const placeholder = `__MARKTEXT_MATH_${i}__`
+        finalMarkdown = finalMarkdown.replace(placeholder, `${delimiter}${latexSource}${endDelimiter}`)
+      }
+      this._mathPlaceholders = null
+    }
+
+    return this.markdownToState(finalMarkdown)
   }
 
   ContentState.prototype.getCodeMirrorCursor = function () {
