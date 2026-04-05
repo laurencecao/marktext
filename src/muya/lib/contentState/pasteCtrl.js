@@ -90,9 +90,7 @@ const pasteCtrl = ContentState => {
         const katexEl = annotation.closest('.katex')
         if (katexEl) {
           const idx = mathPlaceholders.length
-          const delimiter = isDisplayMode ? '\\[' : '$'
-          const endDelimiter = isDisplayMode ? '\\]' : '$'
-          mathPlaceholders.push({ latexSource, delimiter, endDelimiter })
+          mathPlaceholders.push({ latexSource, isDisplayMode })
           katexEl.replaceWith(document.createTextNode(`__MARKTEXT_MATH_${idx}__`))
         }
       }
@@ -149,6 +147,12 @@ const pasteCtrl = ContentState => {
     }
     this._mathPlaceholders = mathPlaceholders.length > 0 ? mathPlaceholders : null
     return tempWrapper.innerHTML
+  }
+
+  ContentState.prototype.normalizeMathDelimiters = function (text) {
+    text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_, content) => `\n$$\n${content}\n$$\n`)
+    text = text.replace(/\\\((.*?)\\\)/g, (_, content) => `$${content}$`)
+    return text
   }
 
   ContentState.prototype.pasteImage = async function (event) {
@@ -451,7 +455,7 @@ const pasteCtrl = ContentState => {
     }
 
     const stateFragments = type === 'pasteAsPlainText' || copyType === 'copyAsMarkdown'
-      ? this.markdownToState(text)
+      ? this.markdownToState(this.normalizeMathDelimiters(text))
       : this.html2State(html)
 
     if (stateFragments.length <= 0) {
